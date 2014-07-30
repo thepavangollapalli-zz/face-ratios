@@ -10,7 +10,7 @@ right_eye_cascade = cv2.CascadeClassifier('/Users/pavangollapalli/opencv/data/ha
 nose_cascade = cv2.CascadeClassifier('/Users/pavangollapalli/opencv/data/haarcascades/haarcascade_mcs_nose.xml')
 mouth_cascade = cv2.CascadeClassifier('/Users/pavangollapalli/opencv/data/haarcascades/haarcascade_mcs_mouth.xml')
 
-img = cv2.imread('faces/face1.jpg')
+img = cv2.imread('faces/face6.jpg')
 new = img.copy()
 grey = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 mask = np.zeros(img.shape[:2], np.uint8)
@@ -43,10 +43,10 @@ def prep_image(img,i):
 	cv2.imshow('3threshold %s' % i,th)
 	blur = cv2.GaussianBlur(th,(5,5),0)
 	cv2.imshow('4blur %s' % i,blur)
-	closing = cv2.morphologyEx(blur, cv2.MORPH_CLOSE, kernel)
+	#closing = cv2.morphologyEx(blur, cv2.MORPH_CLOSE, kernel)
 
-	cv2.imshow("5closing %s" % i , closing)
-	return closing
+	#cv2.imshow("5closing %s" % i , closing)
+	return blur
 
 new_gray = cv2.cvtColor(new,cv2.COLOR_BGR2GRAY)
 
@@ -84,25 +84,25 @@ for (ex,ey,ew,eh) in righteye:
 	#testimg = new[ey:ey+eh,ex:ex+eh]
 	prepped = prep_image(roi_eye, rightex)
 	#return edges
-	circles = cv2.HoughCircles(prepped,cv2.cv.CV_HOUGH_GRADIENT,1,20,param1=100,param2=float(sys.argv[1]),minRadius=20,maxRadius=30)
-	circles = np.uint16(np.around(circles))
-	count = 0
-	for i in circles[0,:]:
-		if i[2] < (ew)/6:
-			#if ((i[0]+face_x)-ex) > ((ew+face_x)/2):
-			cv2.line(new,(ex,0),(ex,100),(0,0,255),2)
-			cv2.line(new,(face_x+ew,0),(face_x+ew,100),(0,255,0),2)
-			cv2.line(new,(face_x+i[0],0),(face_x+i[0],100),(255,0,0),2)
-			cv2.line(new,(face_x,0),(face_x,100),(0,128,255),2)
-			# draw the outer circle
-			cv2.circle(new,(i[0]+ex,i[1]+ey),i[2],(0,255,0),2)
-			# draw the center of the circle
-			cv2.circle(new,(i[0]+ex,i[1]+ey),2,(0,0,255),3)
-			print i,"ex", str(ex), "ey", ey, "ew",ew,"eh",eh
-			cv2.putText(new,str(count),(i[0]+ex-15,i[1]+ey-15), cv2.FONT_HERSHEY_SIMPLEX, 1,(255,255,255),2,cv2.CV_AA)
-			#else:
-			#	print "failed"
-		count += 1
+	# circles = cv2.HoughCircles(prepped,cv2.cv.CV_HOUGH_GRADIENT,1,20,param1=100,param2=5,minRadius=20,maxRadius=30)
+	# circles = np.uint16(np.around(circles))
+	# count = 0
+	# for i in circles[0,:]:
+	# 	if i[2] < (ew)/6:
+	# 		#if ((i[0]+face_x)-ex) > ((ew+face_x)/2):
+	# 		cv2.line(new,(ex,0),(ex,100),(0,0,255),2)
+	# 		cv2.line(new,(face_x+ew,0),(face_x+ew,100),(0,255,0),2)
+	# 		cv2.line(new,(face_x+i[0],0),(face_x+i[0],100),(255,0,0),2)
+	# 		cv2.line(new,(face_x,0),(face_x,100),(0,128,255),2)
+	# 		# draw the outer circle
+	# 		cv2.circle(new,(i[0]+ex,i[1]+ey),i[2],(0,255,0),2)
+	# 		# draw the center of the circle
+	# 		cv2.circle(new,(i[0]+ex,i[1]+ey),2,(0,0,255),3)
+	# 		print i,"ex", str(ex), "ey", ey, "ew",ew,"eh",eh
+	# 		cv2.putText(new,str(count),(i[0]+ex-15,i[1]+ey-15), cv2.FONT_HERSHEY_SIMPLEX, 1,(255,255,255),2,cv2.CV_AA)
+	# 		#else:
+	# 		#	print "failed"
+	# 	count += 1
 
 lefteye = left_eye_cascade.detectMultiScale(new_gray,1.1,5)
 #detect pupils(lefteye)
@@ -121,25 +121,25 @@ cv2.rectangle(new,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 #testimg = new[ey:ey+eh,ex:ex+eh]
 prepped = prep_image(roi_eye, ex)
 #return edges
-circles = cv2.HoughCircles(prepped,cv2.cv.CV_HOUGH_GRADIENT,1,20,param1=100,param2=float(sys.argv[1]),minRadius=0,maxRadius=0)
-circles = np.uint16(np.around(circles))
-count = 0
-for i in circles[0,:]:
-	if i[2] < (ew)/6:
-		if ((i[0]+face_x)-ex) > ((ew+face_x)/2):
-			cv2.line(new,(ex,0),(ex,100),(0,0,255),2)
-			cv2.line(new,(face_x+ew,0),(face_x+ew,100),(0,255,0),2)
-			cv2.line(new,(i[0],0),(i[0],100),(255,0,0),2)
-			cv2.line(new,(face_x,0),(face_x,100),(0,128,255),2)
-			# draw the outer circle
-			cv2.circle(new,(i[0]+ex,i[1]+ey),i[2],(0,255,0),2)
-			# draw the center of the circle
-			cv2.circle(new,(i[0]+ex,i[1]+ey),2,(0,0,255),3)
-			print i,"ex", str(ex), "ey", ey, "ew",ew,"eh",eh
-			cv2.putText(new,str(count),(i[0]+ex-15,i[1]+ey-15), cv2.FONT_HERSHEY_SIMPLEX, 1,(255,255,255),2,cv2.CV_AA)
-		else:
-			print "failed"
-	count += 1	
+# circles = cv2.HoughCircles(prepped,cv2.cv.CV_HOUGH_GRADIENT,1,20,param1=100,param2=5,minRadius=0,maxRadius=0)
+# circles = np.uint16(np.around(circles))
+# count = 0
+# for i in circles[0,:]:
+# 	if i[2] < (ew)/6:
+# 		if ((i[0]+face_x)-ex) > ((ew+face_x)/2):
+# 			cv2.line(new,(ex,0),(ex,100),(0,0,255),2)
+# 			cv2.line(new,(face_x+ew,0),(face_x+ew,100),(0,255,0),2)
+# 			cv2.line(new,(i[0],0),(i[0],100),(255,0,0),2)
+# 			cv2.line(new,(face_x,0),(face_x,100),(0,128,255),2)
+# 			# draw the outer circle
+# 			cv2.circle(new,(i[0]+ex,i[1]+ey),i[2],(0,255,0),2)
+# 			# draw the center of the circle
+# 			cv2.circle(new,(i[0]+ex,i[1]+ey),2,(0,0,255),3)
+# 			print i,"ex", str(ex), "ey", ey, "ew",ew,"eh",eh
+# 			cv2.putText(new,str(count),(i[0]+ex-15,i[1]+ey-15), cv2.FONT_HERSHEY_SIMPLEX, 1,(255,255,255),2,cv2.CV_AA)
+# 		else:
+# 			print "failed"
+# 	count += 1	
 gray = np.float32(roi_eye)
 dst = cv2.cornerHarris(gray,2,3,0.04)
 dst = cv2.dilate(dst,None)
